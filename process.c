@@ -50,7 +50,10 @@ int create_process(process p)
 		
 		// printf("now time = %lld\n", cur_time());
 		for(int i = 0; i < p.burst_t;i++)
+		{
+
 			unit_time();
+		}
 		//end_timeinchild = cur_time();
 		//run_time = end_time - p.start_time;
 		// printf("now end time = %lld\n", cur_time());
@@ -65,40 +68,6 @@ int create_process(process p)
 	set_CPU(pid, 1);
 	return pid;
 }
-//wake_up and block 
-// int proc_block(int pid)
-// {
-// 	struct sched_param param;
-	
-// 	/* SCHED_IDLE should set priority to 0 */
-// 	param.sched_priority = 0;
-
-// 	int ret = sched_setscheduler(pid, SCHED_IDLE, &param);
-	
-// 	if (ret < 0) {
-// 		perror("sched_setscheduler error");
-// 		return -1;
-// 	}
-
-// 	return ret;
-// }
-
-// int proc_wakeup(int pid)
-// {
-// 	struct sched_param param;
-	
-// 	/* SCHED_OTHER should set priority to 0 */
-// 	param.sched_priority = 0;
-
-// 	int ret = sched_setscheduler(pid, SCHED_OTHER, &param);
-	
-// 	if (ret < 0) {
-// 		perror("sched_setscheduler error");
-// 		return -1;
-// 	}
-
-// 	return ret;
-// }
 void set_scheduler(pid_t pid,int priority)
 {
     struct sched_param param;

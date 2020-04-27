@@ -7,6 +7,9 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sched.h>
+
+/* Last running = -1 for RR scheduling */
+static int previous = -1;
 /* Last context switch time for RR scheduling */
 static int t_last;
 
@@ -62,7 +65,7 @@ int next_run(process *p, int process_num, int policy)
 		{
 			if(p[i].pid == -1)
 				continue;
-			if(p[i].burst_t == 0)
+			if(p[i].burst_t <= 0)
 				continue;
 			if(t == -1|| p[i].burst_t < p[t].burst_t)
 				t = i;
@@ -75,11 +78,61 @@ int next_run(process *p, int process_num, int policy)
 		{
 			if(p[i].pid == -1)
 				continue;
-			if(p[i].burst_t == 0)
+			if(p[i].burst_t <= 0)
 				continue;
 			if(t == -1|| p[i].burst_t < p[t].burst_t)
 				t = i;
 		}
+	}
+	if(policy == 2)
+	{	
+		
+		if(running == -1)
+		{	if(previous != -1)
+			{
+				t = previous+1;
+				if(t >= process_num)
+					t = 0;
+				//t = (running+1)%process_num; 
+				while(p[t].pid == -1 || p[t].burst_t <= 0)
+				{
+					t++;
+					if(t >= process_num)
+						t = 0;
+				//t = (t+1)%process_num;  
+				}
+			}
+			else
+			{
+				for(int i = 0; i < process_num;i++)
+				{
+					if(p[i].pid != -1 && p[i].burst_t > 0)
+					{
+						t = i;
+						break;
+					}
+				}
+			}
+			
+		}
+
+		else if((ntime - t_last) % 500 == 0)
+		{
+			t = running +1;
+			if(t >= process_num)
+				t = 0;
+			
+			while(p[t].pid == -1 || p[t].burst_t <= 0)
+			{
+				t++;
+				if(t >= process_num)
+					t = 0;
+				//t = (t+1)%process_num;  
+			}
+			//fprintf(stderr, "n-t: %d %d\n", ntime, t_last) ;
+		}
+		else
+			t = running;
 	}
 	return t;
 }
@@ -102,7 +155,7 @@ int scheduling(process *p, int process_num, int policy)
 	
 	while(1) {
 		//fprintf(stderr, "Current time: %d\n", ntime);
-
+		//fprintf(stderr, "running =  %d %d\n", running, p[running].burst_t);
 		/* Check if running process finish */
 		if (running != -1 && p[running].burst_t == 0) 
 		{
@@ -113,6 +166,7 @@ int scheduling(process *p, int process_num, int policy)
 			p[running].end_time = cur_time();
 			//fprintf(stderr,"%d %lld.%09lld \n",running, p[running].end_time/1000000000ll, p[running].end_time%1000000000ll);
 			//printf("%s %d\n", p[running].name, p[running].pid);
+			previous = running;			
 			running = -1;
 			finish_cnt++;
 

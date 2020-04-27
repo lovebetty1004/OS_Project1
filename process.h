@@ -23,11 +23,5 @@ void set_CPU(int pid, int affinity);
 
 int create_process(process p);
 
-// /* Set very low priority tp process */
-// int proc_block(int pid);
-
-// /* Set high priority to process */
-// int proc_wakeup(int pid);
-
 void set_scheduler(pid_t pid,int priority);
 #endif
