@@ -20,7 +20,7 @@ int main(int argc, char const *argv[])
 	for(int i = 0; i < process_num;i++)
 		scanf("%s %d %d", p[i].name, &p[i].ready_t, &p[i].burst_t);
 	for(int i = 0; i < process_num;i++)
-	 	p[i].start_time = -1;
+	 	p[i].start_time[0] = -1;
 	for(int i = 0; i < process_num;i++)
 	 	p[i].id = i;
 	int policy;
@@ -39,12 +39,18 @@ int main(int argc, char const *argv[])
 	}
 	//printf("%d\n", policy);
 	scheduling(p, process_num, policy);
+	long long int run_time;
+	long long int start;
+	long long int end;
 	for(int i= 0; i < process_num;i++)
 	{
 		fprintf(stderr,"[Project1] pid: %d ",p[i].pid);
-		fprintf(stderr,"%lld.%09lld ",p[i].start_time/1000000000ll, p[i].start_time%1000000000ll);
-		fprintf(stderr,"%lld.%09lld ",p[i].end_time/1000000000ll, p[i].end_time%1000000000ll);
-		fprintf(stderr,"%lld.%09lld ",(p[i].end_time-p[i].start_time)/1000000000ll, (p[i].end_time - p[i].start_time)%1000000000ll);
+		fprintf(stderr,"%lld.%09lld ",p[i].start_time[0], p[i].start_time[1]);
+		fprintf(stderr,"%lld.%09lld ",p[i].end_time[0], p[i].end_time[1]);
+		start = p[i].start_time[0]*1000000000ll+p[i].start_time[1];
+		end = p[i].end_time[0]*1000000000ll+p[i].end_time[1];
+		fprintf(stderr,"%lld.%09lld ",(end-start)/1000000000ll, (end-start)%1000000000ll);
+		
 		fprintf(stderr, "\n");
 	}
 //}				

@@ -163,7 +163,8 @@ int scheduling(process *p, int process_num, int policy)
 			//kill(running, SIGKILL);
 			//
 			waitpid(p[running].pid, NULL, 0);
-			p[running].end_time = cur_time();
+			syscall(334, &p[running].end_time[0], &p[running].end_time[1]);
+			
 			//fprintf(stderr,"%d %lld.%09lld \n",running, p[running].end_time/1000000000ll, p[running].end_time%1000000000ll);
 			//printf("%s %d\n", p[running].name, p[running].pid);
 			previous = running;			
@@ -195,9 +196,10 @@ int scheduling(process *p, int process_num, int policy)
 			if (running != next) 
 			{
 				set_scheduler(p[next].pid,99);
-				if(p[next].start_time == -1)
+				if(p[next].start_time[0] == -1)
 				//{
-					p[next].start_time = cur_time();
+					//p[next].start_time = cur_time();
+					syscall(334,&p[next].start_time[0], &p[next].start_time[1]);
 					//fprintf(stderr,"[Project1] pid: %d ",p	[next].pid);
 
 					//fprintf(stderr,"%lld.%09lld ",p[next].start_time/1000000000ll, p[next].start_time%1000000000ll);
