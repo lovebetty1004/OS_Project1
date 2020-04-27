@@ -68,6 +68,19 @@ int next_run(process *p, int process_num, int policy)
 				t = i;
 		}
 	}
+	//PSJF
+	if(policy == 4)
+	{
+		for(int i = 0; i < process_num; i++)
+		{
+			if(p[i].pid == -1)
+				continue;
+			if(p[i].burst_t == 0)
+				continue;
+			if(t == -1|| p[i].burst_t < p[t].burst_t)
+				t = i;
+		}
+	}
 	return t;
 }
 int scheduling(process *p, int process_num, int policy)
@@ -98,7 +111,7 @@ int scheduling(process *p, int process_num, int policy)
 			//
 			waitpid(p[running].pid, NULL, 0);
 			p[running].end_time = cur_time();
-			fprintf(stderr,"%lld.%09lld \n",p[running].end_time/1000000000ll, p[running].end_time%1000000000ll);
+			//fprintf(stderr,"%d %lld.%09lld \n",running, p[running].end_time/1000000000ll, p[running].end_time%1000000000ll);
 			//printf("%s %d\n", p[running].name, p[running].pid);
 			running = -1;
 			finish_cnt++;
@@ -128,10 +141,13 @@ int scheduling(process *p, int process_num, int policy)
 			if (running != next) 
 			{
 				set_scheduler(p[next].pid,99);
-				p[next].start_time = cur_time();
-				fprintf(stderr,"[Project1] pid: %d ",p[next].pid);
-				fprintf(stderr,"%lld.%09lld ",p[next].start_time/1000000000ll, p[next].start_time%1000000000ll);
-				
+				if(p[next].start_time == -1)
+				//{
+					p[next].start_time = cur_time();
+					//fprintf(stderr,"[Project1] pid: %d ",p	[next].pid);
+
+					//fprintf(stderr,"%lld.%09lld ",p[next].start_time/1000000000ll, p[next].start_time%1000000000ll);
+//}				
 				set_scheduler(p[running].pid, 1);
 				running = next;
 				t_last = ntime;

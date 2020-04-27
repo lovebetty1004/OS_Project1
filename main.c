@@ -39,5 +39,14 @@ int main(int argc, char const *argv[])
 	}
 	//printf("%d\n", policy);
 	scheduling(p, process_num, policy);
+	for(int i= 0; i < process_num;i++)
+	{
+		fprintf(stderr,"[Project1] pid: %d ",p[i].pid);
+		fprintf(stderr,"%lld.%09lld ",p[i].start_time/1000000000ll, p[i].start_time%1000000000ll);
+		fprintf(stderr,"%lld.%09lld ",p[i].end_time/1000000000ll, p[i].end_time%1000000000ll);
+		fprintf(stderr,"%lld.%09lld ",(p[i].end_time-p[i].start_time)/1000000000ll, (p[i].end_time - p[i].start_time)%1000000000ll);
+		fprintf(stderr, "\n");
+	}
+//}				
 	return 0;
 }
