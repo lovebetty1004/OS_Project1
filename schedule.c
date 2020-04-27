@@ -35,10 +35,14 @@ int compare(const void *ptr1, const void *ptr2)
 }
 int next_run(process *p, int process_num, int policy)
 {
+	//Non-preemptive
 	if(running != -1 && policy == 1)
+		return running;
+	else if(running != -1 && policy == 3)
 		return running;
 
 	int t = -1;
+	//FIFO
 	if(policy == 1)
 	{
 		for(int i = 0; i < process_num; i++)
@@ -48,6 +52,19 @@ int next_run(process *p, int process_num, int policy)
 			if(p[i].burst_t == 0)
 				continue;
 			if(t == -1|| p[i].ready_t < p[t].ready_t)
+				t = i;
+		}
+	}
+	//SJF
+	if(policy == 3)
+	{
+		for(int i = 0; i < process_num; i++)
+		{
+			if(p[i].pid == -1)
+				continue;
+			if(p[i].burst_t == 0)
+				continue;
+			if(t == -1|| p[i].burst_t < p[t].burst_t)
 				t = i;
 		}
 	}
