@@ -102,7 +102,7 @@ int scheduling(process *p, int process_num, int policy)
 			/* Context switch */
 			if (running != next) 
 			{
-				set_scheduler(p[next].pid, 99);
+				set_scheduler(p[next].pid,99);
 				set_scheduler(p[running].pid, 1);
 				running = next;
 				t_last = ntime;

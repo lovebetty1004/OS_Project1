@@ -25,7 +25,7 @@ void set_CPU(int pid, int affinity)
 	cpu_set_t mask;
 	CPU_ZERO(&mask);
 	CPU_SET(affinity, &mask);
-	if(sched_setaffinity(pid, sizeof(mask), &mask) !=0)
+	if(sched_setaffinity(pid, sizeof(mask), &mask) < 0)
 	{
 		perror("sched_setaffinity error");
 		exit(EXIT_FAILURE);
@@ -45,20 +45,23 @@ int create_process(process p)
 		// fprintf(stderr,"%lld.%09lld ",start_time/1000000000ll, start_time%1000000000ll);
 		long long int start_time;
 		long long int end_time;
+		long long int run_time;
 		start_time = cur_time();
 		// printf("now time = %lld\n", cur_time());
 		for(int i = 0; i < p.burst_t;i++)
 			unit_time();
 		end_time = cur_time();
+		run_time = end_time - start_time;
 		// printf("now end time = %lld\n", cur_time());
 		fprintf(stderr,"[Project1] pid: %d ",getpid());
 		fprintf(stderr,"%lld.%09lld ",start_time/1000000000ll, start_time%1000000000ll);
 		fprintf(stderr,"%lld.%09lld ",end_time/1000000000ll, end_time%1000000000ll);
 		// fprintf(stderr,"%lld.%09lld ",d_time/1000000000ll, d_time%1000000000ll);
+		fprintf(stderr, "%lld.%09lld", run_time/1000000000ll, run_time%1000000000ll);
 		fprintf(stderr,"\n");
 		exit(0);
 	}
-	set_CPU(pid, 0);
+	set_CPU(pid, 1);
 	return pid;
 }
 //wake_up and block 
