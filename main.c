@@ -19,8 +19,10 @@ int main(int argc, char const *argv[])
 	p = (process *)malloc(process_num * sizeof(process));
 	for(int i = 0; i < process_num;i++)
 		scanf("%s %d %d", p[i].name, &p[i].ready_t, &p[i].burst_t);
-	// for(int i = 0; i < process_num;i++)
-	// 	printf("%s %d %d\n", p[i].name, p[i].ready_t, p[i].burst_t);
+	for(int i = 0; i < process_num;i++)
+	 	p[i].start_time = -1;
+	for(int i = 0; i < process_num;i++)
+	 	p[i].id = i;
 	int policy;
 	if(strcmp(sched_type, "FIFO") == 0)
 		policy = 1;

@@ -13,6 +13,9 @@ struct process
 	int ready_t;
 	int burst_t;
 	pid_t pid;
+	int id;
+	long long int start_time; 
+	long long int end_time;
 };
 typedef struct process process;
 

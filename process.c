@@ -35,6 +35,7 @@ void set_CPU(int pid, int affinity)
 int create_process(process p)
 {
 	int pid = fork();
+	//p.start_time = cur_time();
 	if(pid < 0)
 	{
 		perror("fork error");
@@ -43,22 +44,22 @@ int create_process(process p)
 	else if(pid == 0)
 	{
 		// fprintf(stderr,"%lld.%09lld ",start_time/1000000000ll, start_time%1000000000ll);
-		long long int start_time;
-		long long int end_time;
-		long long int run_time;
-		start_time = cur_time();
+		
+		//long long int end_timeinchild;
+		//long long int run_time;
+		
 		// printf("now time = %lld\n", cur_time());
 		for(int i = 0; i < p.burst_t;i++)
 			unit_time();
-		end_time = cur_time();
-		run_time = end_time - start_time;
+		//end_timeinchild = cur_time();
+		//run_time = end_time - p.start_time;
 		// printf("now end time = %lld\n", cur_time());
-		fprintf(stderr,"[Project1] pid: %d ",getpid());
-		fprintf(stderr,"%lld.%09lld ",start_time/1000000000ll, start_time%1000000000ll);
-		fprintf(stderr,"%lld.%09lld ",end_time/1000000000ll, end_time%1000000000ll);
+		
+		//fprintf(stderr,"%lld.%09lld ",p.start_time/1000000000ll, p.start_time%1000000000ll);
+		//fprintf(stderr,"end time in chile:%lld.%09lld\n ",end_timeinchild/1000000000ll, end_timeinchild%1000000000ll);
 		// fprintf(stderr,"%lld.%09lld ",d_time/1000000000ll, d_time%1000000000ll);
-		fprintf(stderr, "%lld.%09lld", run_time/1000000000ll, run_time%1000000000ll);
-		fprintf(stderr,"\n");
+		//fprintf(stderr, "%lld.%09lld", run_time/1000000000ll, run_time%1000000000ll);
+		//fprintf(stderr,"\n");
 		exit(0);
 	}
 	set_CPU(pid, 1);
