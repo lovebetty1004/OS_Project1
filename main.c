@@ -74,14 +74,14 @@ int main(int argc, char const *argv[])
 	{
 		sprintf(dmesg , "[Project1] pid: %d %lld.%09lld %lld.%09lld\n", p[i].pid, p[i].start_time[0], p[i].start_time[1], p[i].end_time[0], p[i].end_time[1]);
 		syscall(335, dmesg);
-		fprintf(stderr,"[Project1] pid: %d ",p[i].pid);
-		fprintf(stderr,"%lld.%09lld ",p[i].start_time[0], p[i].start_time[1]);
-		fprintf(stderr,"%lld.%09lld ",p[i].end_time[0], p[i].end_time[1]);
+		//fprintf(stderr,"[Project1] pid: %d ",p[i].pid);
+		//fprintf(stderr,"%lld.%09lld ",p[i].start_time[0], p[i].start_time[1]);
+		//fprintf(stderr,"%lld.%09lld ",p[i].end_time[0], p[i].end_time[1]);
 		//p[i].start = p[i].start_time[0]*1000000000ll+p[i].start_time[1];
 		//p[i].end = p[i].end_time[0]*1000000000ll+p[i].end_time[1];
-		fprintf(stderr,"%lld.%09lld ",p[i].run_time/1000000000ll, p[i].run_time%1000000000ll);
+		//fprintf(stderr,"%lld.%09lld ",p[i].run_time/1000000000ll, p[i].run_time%1000000000ll);
 		
-		fprintf(stderr, "\n");
+		//fprintf(stderr, "\n");
 	}
 //}				
 	return 0;
