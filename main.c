@@ -7,6 +7,21 @@
 #include <unistd.h>
 #include "process.h"
 #include "schedule.h"
+//output compare
+int cmp(const void *ptr1, const void *ptr2)
+{
+	process *a = (process *)ptr1;
+	process *b = (process *)ptr2;
+	if(a->end < b->end)
+		return -1;
+	if(a ->end > b->end)
+		return 1;
+	if(a -> id < b -> id)
+		return -1;
+	if(a -> id > b-> id)
+		return 1;
+	return 0;
+}
 
 int main(int argc, char const *argv[])
 {
@@ -44,12 +59,27 @@ int main(int argc, char const *argv[])
 	long long int end;
 	for(int i= 0; i < process_num;i++)
 	{
+		//fprintf(stderr,"[Project1] pid: %d ",p[i].pid);
+		//fprintf(stderr,"%lld.%09lld ",p[i].start_time[0], p[i].start_time[1]);
+		//fprintf(stderr,"%lld.%09lld ",p[i].end_time[0], p[i].end_time[1]);
+		p[i].start = p[i].start_time[0]*1000000000ll+p[i].start_time[1];
+		p[i].end = p[i].end_time[0]*1000000000ll+p[i].end_time[1];
+		p[i].run_time = p[i].end-p[i].start;
+		
+		//fprintf(stderr, "\n");
+	}
+	qsort(p, process_num, sizeof(process), cmp);
+	char dmesg[200];
+	for(int i= 0; i < process_num;i++)
+	{
+		sprintf(dmesg , "[Project1] pid: %d %lld.%09lld %lld.%09lld\n", p[i].pid, p[i].start_time[0], p[i].start_time[1], p[i].end_time[0], p[i].end_time[1]);
+		syscall(335, dmesg);
 		fprintf(stderr,"[Project1] pid: %d ",p[i].pid);
 		fprintf(stderr,"%lld.%09lld ",p[i].start_time[0], p[i].start_time[1]);
 		fprintf(stderr,"%lld.%09lld ",p[i].end_time[0], p[i].end_time[1]);
-		start = p[i].start_time[0]*1000000000ll+p[i].start_time[1];
-		end = p[i].end_time[0]*1000000000ll+p[i].end_time[1];
-		fprintf(stderr,"%lld.%09lld ",(end-start)/1000000000ll, (end-start)%1000000000ll);
+		//p[i].start = p[i].start_time[0]*1000000000ll+p[i].start_time[1];
+		//p[i].end = p[i].end_time[0]*1000000000ll+p[i].end_time[1];
+		fprintf(stderr,"%lld.%09lld ",p[i].run_time/1000000000ll, p[i].run_time%1000000000ll);
 		
 		fprintf(stderr, "\n");
 	}

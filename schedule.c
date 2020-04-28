@@ -8,19 +8,16 @@
 #include <sys/wait.h>
 #include <sched.h>
 
-/* Last running = -1 for RR scheduling */
+//Last running = -1 for RR sched
 static int previous = -1;
-/* Last context switch time for RR scheduling */
-static int t_last;
-
-/* Current unit time */
-static int ntime;
-
-/* Index of running process. -1 if no process running */
+//Last context switch time for RR scheduling 
+static int rr_last;
+//Current unit time
+static int now_time;
+//Index of running process. -1 if no process running 
 static int running;
-
-/* Number of finish Process */
-static int finish_cnt;
+//Number of finish Process 
+static int finish_count;
 
 int compare(const void *ptr1, const void *ptr2)
 {
@@ -36,17 +33,17 @@ int compare(const void *ptr1, const void *ptr2)
 		return 1;
 	return 0;
 }
-int next_run(process *p, int process_num, int policy)
+int next_run(process *p, int process_num, int sched_type)
 {
 	//Non-preemptive
-	if(running != -1 && policy == 1)
+	if(running != -1 && sched_type == 1)
 		return running;
-	else if(running != -1 && policy == 3)
+	else if(running != -1 && sched_type == 3)
 		return running;
 
 	int t = -1;
 	//FIFO
-	if(policy == 1)
+	if(sched_type == 1)
 	{
 		for(int i = 0; i < process_num; i++)
 		{
@@ -59,7 +56,7 @@ int next_run(process *p, int process_num, int policy)
 		}
 	}
 	//SJF
-	if(policy == 3)
+	if(sched_type == 3)
 	{
 		for(int i = 0; i < process_num; i++)
 		{
@@ -72,7 +69,7 @@ int next_run(process *p, int process_num, int policy)
 		}
 	}
 	//PSJF
-	if(policy == 4)
+	if(sched_type == 4)
 	{
 		for(int i = 0; i < process_num; i++)
 		{
@@ -84,7 +81,7 @@ int next_run(process *p, int process_num, int policy)
 				t = i;
 		}
 	}
-	if(policy == 2)
+	if(sched_type == 2)
 	{	
 		
 		if(running == -1)
@@ -116,7 +113,7 @@ int next_run(process *p, int process_num, int policy)
 			
 		}
 
-		else if((ntime - t_last) % 500 == 0)
+		else if((now_time - rr_last) % 500 == 0)
 		{
 			t = running +1;
 			if(t >= process_num)
@@ -129,14 +126,14 @@ int next_run(process *p, int process_num, int policy)
 					t = 0;
 				//t = (t+1)%process_num;  
 			}
-			//fprintf(stderr, "n-t: %d %d\n", ntime, t_last) ;
+			//fprintf(stderr, "n-t: %d %d\n", now_time, t_last) ;
 		}
 		else
 			t = running;
 	}
 	return t;
 }
-int scheduling(process *p, int process_num, int policy)
+int scheduling(process *p, int process_num, int sched_type)
 {
 	qsort(p, process_num, sizeof(process), compare);
 	
@@ -145,16 +142,15 @@ int scheduling(process *p, int process_num, int policy)
 
 	set_CPU(getpid(), 0);
 	
-	/* Set high priority to scheduler */
+	//Set high priority to scheduler 
 	set_scheduler(getpid(),99);
 
-	/* Initial scheduler */
-	ntime = 0;
+	now_time = 0;
 	running = -1;
-	finish_cnt = 0;
+	finish_count = 0;
 	
 	while(1) {
-		//fprintf(stderr, "Current time: %d\n", ntime);
+		//fprintf(stderr, "Current time: %d\n", now_time);
 		//fprintf(stderr, "running =  %d %d\n", running, p[running].burst_t);
 		/* Check if running process finish */
 		if (running != -1 && p[running].burst_t == 0) 
@@ -169,17 +165,17 @@ int scheduling(process *p, int process_num, int policy)
 			//printf("%s %d\n", p[running].name, p[running].pid);
 			previous = running;			
 			running = -1;
-			finish_cnt++;
+			finish_count++;
 
 			/* All process finish */
-			if (finish_cnt == process_num)
+			if (finish_count == process_num)
 				break;
 		}
 
 		/* Check if process ready and execute */
 		for (int i = 0; i < process_num; i++) 
 		{
-			if (p[i].ready_t == ntime) 
+			if (p[i].ready_t == now_time) 
 			{
 				p[i].pid = create_process(p[i]);
 				set_scheduler(p[i].pid, 1);
@@ -189,7 +185,7 @@ int scheduling(process *p, int process_num, int policy)
 		}
 
 		/* Select next running  process */
-		int next = next_run(p, process_num, policy);
+		int next = next_run(p, process_num, sched_type);
 		if (next != -1) 
 		{
 			/* Context switch */
@@ -206,7 +202,7 @@ int scheduling(process *p, int process_num, int policy)
 //}				
 				set_scheduler(p[running].pid, 1);
 				running = next;
-				t_last = ntime;
+				rr_last = now_time;
 			}
 		}
 
@@ -214,7 +210,7 @@ int scheduling(process *p, int process_num, int policy)
 		unit_time();
 		if (running != -1)
 			p[running].burst_t--;
-		ntime++;
+		now_time++;
 	}
 	return 0;
 

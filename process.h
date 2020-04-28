@@ -15,7 +15,10 @@ struct process
 	pid_t pid;
 	int id;
 	long long int start_time[2]; 
+	long long int start;
 	long long int end_time[2];
+	long long int end;
+	long long int run_time;
 };
 typedef struct process process;
 
