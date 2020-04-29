@@ -35,7 +35,10 @@ int main(int argc, char const *argv[])
 	for(int i = 0; i < process_num;i++)
 		scanf("%s %d %d", p[i].name, &p[i].ready_t, &p[i].burst_t);
 	for(int i = 0; i < process_num;i++)
+	{
 	 	p[i].start_time[0] = -1;
+	 	p[i].print_or_not = 0;
+	}
 	for(int i = 0; i < process_num;i++)
 	 	p[i].id = i;
 	int policy;
@@ -68,6 +71,8 @@ int main(int argc, char const *argv[])
 		
 		//fprintf(stderr, "\n");
 	}
+	for(int i = 0; i < process_num;i++)
+		printf("%s %d\n",p[i].name, p[i].pid);
 	qsort(p, process_num, sizeof(process), cmp);
 	char dmesg[200];
 	for(int i= 0; i < process_num;i++)

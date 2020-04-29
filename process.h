@@ -19,6 +19,7 @@ struct process
 	long long int end_time[2];
 	long long int end;
 	long long int run_time;
+	int print_or_not;
 };
 typedef struct process process;
 

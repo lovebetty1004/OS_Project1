@@ -179,7 +179,14 @@ int scheduling(process *p, int process_num, int sched_type)
 			{
 				p[i].pid = create_process(p[i]);
 				set_scheduler(p[i].pid, 1);
-				printf("%s %d\n", p[i].name, p[i].pid);
+				//if(p[i].print_or_not  == 0)
+				//{
+					//p[i].print_or_not = 1;
+				//printf("test = %s %d\n", p[i].name, p[i].pid);
+					//printf("%d",p[i].print_or_not);
+					
+					//printf("%d",p[i].print_or_not);
+				//
 			}
 
 		}
