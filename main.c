@@ -77,7 +77,7 @@ int main(int argc, char const *argv[])
 	char dmesg[200];
 	for(int i= 0; i < process_num;i++)
 	{
-		sprintf(dmesg , "[Project1] pid: %d %lld.%09lld %lld.%09lld\n", p[i].pid, p[i].start_time[0], p[i].start_time[1], p[i].end_time[0], p[i].end_time[1]);
+		sprintf(dmesg , "[Project1] %d %lld.%09lld %lld.%09lld\n", p[i].pid, p[i].start_time[0], p[i].start_time[1], p[i].end_time[0], p[i].end_time[1]);
 		syscall(335, dmesg);
 		//fprintf(stderr,"[Project1] pid: %d ",p[i].pid);
 		//fprintf(stderr,"%lld.%09lld ",p[i].start_time[0], p[i].start_time[1]);
