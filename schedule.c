@@ -18,6 +18,51 @@ static int now_time;
 static int running;
 //Number of finish Process 
 static int finish_count;
+//Queue for RR Linked list
+struct queue
+{
+	int data;
+	struct queue *next;
+};
+typedef struct queue queue;
+
+static queue *readyQ;
+
+void push(int data)
+{
+	//first insert
+	if(readyQ == NULL)
+	{
+		readyQ = (queue *)malloc(sizeof(queue));
+		readyQ -> data = data;
+		readyQ -> next = NULL;
+		return;
+	}
+	queue *insert = readyQ;
+	while(1)
+	{
+		if(insert -> next == NULL)
+		{
+			insert -> next = (queue *)malloc(sizeof(queue));
+			insert -> next -> data = data;
+			insert -> next -> next = NULL;
+			break;
+		}
+		else
+			insert = insert->next;
+	}
+}
+int pop()
+{
+	if(readyQ == NULL)
+		return -1;
+	else
+	{
+		int popoutnumber = readyQ -> data;
+		readyQ = readyQ -> next;
+		return popoutnumber;
+	}
+}
 
 int compare(const void *ptr1, const void *ptr2)
 {
@@ -81,56 +126,28 @@ int next_run(process *p, int process_num, int sched_type)
 				t = i;
 		}
 	}
+	//RR
 	if(sched_type == 2)
-	{	
-		
-		if(running == -1)
-		{	if(previous != -1)
-			{
-				t = previous+1;
-				if(t >= process_num)
-					t = 0;
-				//t = (running+1)%process_num; 
-				while(p[t].pid == -1 || p[t].burst_t <= 0)
-				{
-					t++;
-					if(t >= process_num)
-						t = 0;
-				//t = (t+1)%process_num;  
-				}
-			}
+	{
+		if(running == -1 || (now_time - rr_last) % 500 == 0)
+		{
+			int nextq = pop();
+			if(nextq == -1)
+				t = running;
 			else
 			{
-				for(int i = 0; i < process_num;i++)
+				//not end yet
+				if(running != -1)
 				{
-					if(p[i].pid != -1 && p[i].burst_t > 0)
-					{
-						t = i;
-						break;
-					}
+					push(running);
 				}
+				t = nextq;
 			}
-			
-		}
-
-		else if((now_time - rr_last) % 500 == 0)
-		{
-			t = running +1;
-			if(t >= process_num)
-				t = 0;
-			
-			while(p[t].pid == -1 || p[t].burst_t <= 0)
-			{
-				t++;
-				if(t >= process_num)
-					t = 0;
-				//t = (t+1)%process_num;  
-			}
-			//fprintf(stderr, "n-t: %d %d\n", now_time, t_last) ;
 		}
 		else
-			t = running;
+			t = running;		
 	}
+	//printf("cs to %d\n", t);
 	return t;
 }
 int scheduling(process *p, int process_num, int sched_type)
@@ -146,8 +163,10 @@ int scheduling(process *p, int process_num, int sched_type)
 	set_scheduler(getpid(),99);
 
 	now_time = 0;
+	rr_last = 0;
 	running = -1;
 	finish_count = 0;
+	readyQ = NULL;
 	
 	while(1) {
 		//fprintf(stderr, "Current time: %d\n", now_time);
@@ -179,6 +198,9 @@ int scheduling(process *p, int process_num, int sched_type)
 			{
 				p[i].pid = create_process(p[i]);
 				set_scheduler(p[i].pid, 1);
+				push(i);
+				//printf("%d\n", );
+				//printf("push = %d\n", i);
 				//if(p[i].print_or_not  == 0)
 				//{
 					//p[i].print_or_not = 1;
@@ -195,9 +217,11 @@ int scheduling(process *p, int process_num, int sched_type)
 		int next = next_run(p, process_num, sched_type);
 		if (next != -1) 
 		{
+			//printf("next index = %d\n", next);
 			/* Context switch */
 			if (running != next) 
 			{
+				//printf("now time = %d next index = %d\n", now_time, next);
 				set_scheduler(p[next].pid,99);
 				if(p[next].start_time[0] == -1)
 				//{
